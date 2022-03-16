@@ -3,6 +3,16 @@ const inquirer = require('inquirer');
 const mySQL = require('mysql2');
 require('console.table');
 
+// Connect to database
+const db = mySQL.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: 'password',
+        database: 'employees_db'
+    }
+)
+
 // Call init function to start when node is run
 init();
 
