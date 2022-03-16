@@ -10,7 +10,9 @@ const db = mySQL.createConnection(
         user: 'root',
         password: 'password',
         database: 'employees_db'
-    }
+        
+    },
+    // console.log(`Connected to database`)
 )
 
 // Call init function to start when node is run
@@ -36,17 +38,23 @@ function init() {
         )
         .then((input) => {
             if (input.initPrompt === "View All Curent Employees") {
-
+                db.query('SELECT * FROM employees', function (err, results) {
+                    console.table(results);
+                  });
             } else if (input.initPrompt === "Add New Employee") {
                 
             } else if (input.initPrompt === "Update Current Employee Info") {
                 
             } else if (input.initPrompt === "View All Current Roles") {
-                
+                db.query('SELECT * FROM roles', function (err, results) {
+                    console.table(results);
+                  });
             } else if (input.initPrompt === "Add New Role") {
                 
             } else if (input.initPrompt === "View All Current Departments") {
-                
+                db.query('SELECT * FROM departments', function (err, results) {
+                    console.table(results);
+                  });
             } else {
                 
             }
