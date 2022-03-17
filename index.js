@@ -299,7 +299,7 @@ function updateEmp() {
             {
                 type: "list",
                 message: (input) => `What would you like to do?`,
-                choices: ["Update role of employee", "Assign new Manager for employee"],
+                choices: ["Update role of an employee", "Assign new Manager for an employee"],
                 name: "newInfo"
             },
             {
@@ -310,21 +310,34 @@ function updateEmp() {
             },
             {
                 type: "list",
-                message: (input) => `What is their new role?`,
+                message: `What is their new role?`,
                 choices: roleArr,
-                when: (input) => input.newInfo === "Update role of employee",
+                when: (input) => input.newInfo === "Update role of an employee",
                 name: "newRole"
             },
             {
                 type: "list",
-                message: (input) => `Who is their new Manager?`,
+                message: `Who is their new Manager?`,
                 choices: mgrArr,
-                when: (input) => input.newInfo === "Assign new Manager for employee",
+                when: (input) => input.newInfo === "Assign new Manager for an employee",
                 name: "newMgr"
             },
         ])
         .then((input) => {
-
+            if (input.newInfo === "Update role of an employee") {
+                db.query('UPDATE employees SET role_id = ? WHERE id = ?', [input.newRole, input.empChoice], (err, data) => {
+                    console.clear();
+                    console.log(`Employee records updated!`);
+                    quit();
+                })
+                // console.log(input.newRole)
+            } else {
+                db.query('UPDATE employees SET manager_id = ? WHERE id = ?', [input.newMgr, input.empChoice], (err, data) => {
+                    console.clear();
+                    console.log(`Employee records updated!`);
+                    quit();
+                })
+            }
         }) 
    
 }
