@@ -3,6 +3,12 @@ const inquirer = require('inquirer');
 const mySQL = require('mysql2');
 require('console.table');
 
+// Declare variables for empty arrays needed
+const roleArr = [];
+const mgrArr = [];
+const deptArr = [];
+const empArr = [];
+
 // Connect to database
 const db = mySQL.createConnection(
     {
@@ -10,10 +16,70 @@ const db = mySQL.createConnection(
         user: 'root',
         password: 'password',
         database: 'employees_db'
-        
     },
     console.log(`Welcome to Employee Manager`)
 )
+
+// Query functions
+function getRoles() {
+    // Query to pull all roles and place in array
+    db.query('SELECT * FROM roles', (err, data) => {
+        // console.log(data);
+        for (let role of data) {
+            roleArr.push(
+                {
+                    name: role.title,
+                    value: role.id
+                }
+            )
+        }   
+    })
+}
+
+function getDepts() {
+    // Query to pull all departments and place in array
+    db.query('SELECT * FROM departments', (err, data) => {
+        // console.log(data);
+        for (let dept of data) {
+            deptArr.push(
+                {
+                    name: dept.dept_name,
+                    value: dept.id
+                }
+            )
+        }   
+    })
+}
+
+function getMgrs() {
+    // Query to pull all managers and place in array
+    db.query('SELECT * FROM employees', (err, data) => {
+        for (let emp of data) {
+            if (emp.role_id === 1) {
+                mgrArr.push(
+                    {
+                        name: `${emp.first_name} ${emp.last_name}`,
+                        value: emp.id
+                    }
+                )
+            }
+        }   
+    })
+}
+
+function getEmps() {
+    // Query to pull all employees and place in array
+    db.query('SELECT * FROM employees', (err, data) => {
+        for (let emp of data) {
+            empArr.push(
+                {
+                    name: `${emp.first_name} ${emp.last_name}`,
+                    value: emp.id
+                }
+            )
+        }  
+    })  
+}
 
 // Call init function to start when node is run
 init();
@@ -34,7 +100,8 @@ function init() {
                     "Add New Role", 
                     "View All Departments",
                     "Add New Department",
-                    "Exit"],
+                    "Exit"
+                ],
             }
         )
         .then((input) => {
@@ -43,7 +110,7 @@ function init() {
             } else if (input.initPrompt === "Add New Employee") {
                 addEmp();
             } else if (input.initPrompt === "Update Info for a Current Employee") {
-                
+                updateEmp();
             } else if (input.initPrompt === "View All Roles") {
                 viewRoles();
             } else if (input.initPrompt === "Add New Role") {
@@ -112,35 +179,11 @@ function viewDepts() {
 
 // Function to add new employee
 function addEmp() {
-    let roleArr = [];
-    let mgrArr = [];
+    // Call function to pull all roles and place in array
+    getRoles();
 
-    // Query to pull all roles and place in array
-    db.query('SELECT * FROM roles', (err, data) => {
-        // console.log(data);
-        for (let role of data) {
-            roleArr.push(
-                {
-                    name: role.title,
-                    value: role.id
-                }
-            )
-        }   
-    })
-
-    // Query to pull all managers and place in array
-    db.query('SELECT * FROM employees', (err, data) => {
-        for (let emp of data) {
-            if (emp.role_id === 1) {
-                mgrArr.push(
-                    {
-                        name: `${emp.first_name} ${emp.last_name}`,
-                        value: emp.id
-                    }
-                )
-            }
-        }   
-    })
+    // Call function to pull all managers and place in array
+    getMgrs();
 
     inquirer
         .prompt([
@@ -184,20 +227,8 @@ function addEmp() {
 
 // Function to add new role
 function addRole() {
-    let deptArr = [];
-
-    // Query to pull all departments and place in array
-    db.query('SELECT * FROM departments', (err, data) => {
-        // console.log(data);
-        for (let dept of data) {
-            deptArr.push(
-                {
-                    name: dept.dept_name,
-                    value: dept.id
-                }
-            )
-        }   
-    })
+    // Call function to pull all departments and place in array
+    getDepts();
 
     // Get info from user on new role
     inquirer
@@ -221,6 +252,7 @@ function addRole() {
         ])
         .then((input) => {
             db.query('INSERT INTO roles (title, salary, dept_id) VALUES (?, ?, ?)', [input.newRole, input.salary, input.dept], (err, data) => {
+                console.clear();
                 console.log(`${input.newRole} added as new role`);
                 quit();
             })
@@ -239,8 +271,50 @@ function addDept() {
         )
         .then((input) => {
             db.query('INSERT INTO departments (dept_name) VALUES (?)', input.newDept, (err, data) => {
+                console.clear();
                 console.log(`${input.newDept} added as new department`);
                 quit();
             })
         })
+}
+
+// Function to update current employee info
+function updateEmp() {
+    // Call function to pull all employees and place in array
+    getEmps();
+
+    // Prompts to determine who/what is being updated
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                message: "Which employee would you like to update?",
+                choices: empArr,
+                name: "empChoice"
+            },
+            {
+                type: "list",
+                message: (input) => `What information would you like to update about ${input.empChoice}?`,
+                choices: ["Update role", "Assign new manager"],
+                name: "newInfo"
+            },
+            {
+                type: "list",
+                message: (input) => `What is ${input.empChoice}'s new role?`,
+                choices: roleArr,
+                when: (input) => input.newInfo === "Update role",
+                name: "newRole"
+            },
+            {
+                type: "list",
+                message: (input) => `Who is ${input.empChoice}'s new manager?`,
+                choices: mgrArr,
+                when: (input) => input.newInfo === "Assign new manager",
+                name: "newMgr"
+            },
+        ])
+        .then((input) => {
+            // console.log(input.empChoice)
+        }) 
+   
 }
