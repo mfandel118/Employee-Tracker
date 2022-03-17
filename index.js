@@ -151,6 +151,22 @@ function addEmp() {
 
 // Function to add new role
 function addRole() {
+    let deptArr = [];
+
+    // Query to pull all departments and place in array
+    db.query('SELECT * FROM departments', (err, data) => {
+        // console.log(data);
+        for (let dept of data) {
+            deptArr.push(
+                {
+                    name: dept.dept_name,
+                    value: dept.id
+                }
+            )
+        }   
+    })
+
+    // Get info from user on new role
     inquirer
         .prompt([
             {
@@ -164,13 +180,14 @@ function addRole() {
                 name: "salary"
             },
             {
-                type: "input",
-                message: (input) => `What is the department id for ${input.newRole}?`,
-                name: "dept_id"
+                type: "list",
+                message: (input) => `What department is ${input.newRole} being added to?`,
+                choices: deptArr,
+                name: "dept"
             },
         ])
         .then((input) => {
-            db.query('INSERT INTO roles (title, salary, dept_id) VALUES (?, ?, ?)', [input.newRole, input.salary, input.dept_id], (err, data) => {
+            db.query('INSERT INTO roles (title, salary, dept_id) VALUES (?, ?, ?)', [input.newRole, input.salary, input.dept], (err, data) => {
                 console.log(`${input.newRole} added as new role`);
                 quit();
             })
