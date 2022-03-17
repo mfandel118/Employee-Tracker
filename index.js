@@ -41,7 +41,7 @@ function init() {
             if (input.initPrompt === "View All Current Employees") {
                 viewEmps();
             } else if (input.initPrompt === "Add New Employee") {
-                
+                addEmp();
             } else if (input.initPrompt === "Update Info for a Current Employee") {
                 
             } else if (input.initPrompt === "View All Roles") {
@@ -103,11 +103,50 @@ function viewRoles() {
 
 // Function to view table of departments
 function viewDepts() {
-    db.query('SELECT * FROM departments', (err, data) => {
+    db.query('SELECT * FROM departments ORDER BY id', (err, data) => {
         console.clear();
         console.table(data);
         quit();
     })
+}
+
+// Function to add new employee
+function addEmp() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the first name of the new employee?",
+                name: "firstName"
+            },
+            {
+                type: "input",
+                message: "What is the last name of the new employee?",
+                name: "lastName"
+            },
+            {
+                type: "input",
+                message: (input) => `What is the role_id for ${input.firstName} ${input.lastName}?`,
+                name: "roleId"
+            },
+            {
+                type: "confirm",
+                message: (input) => `Does ${input.firstName} ${input.lastName} have a manager?`,
+                name: "mgrConfirm"
+            },
+            {
+                type: "input",
+                message: (input) => `What is the manager id for ${input.firstName} ${input.lastName}?`,
+                when: (input) => input.mgrConfirm === true,
+                name: "mgrId"
+            },
+        ])
+        .then((input) => {
+            db.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [input.firstName, input.lastName, input.roleId, input.mgrId], (err, data) => {
+                console.log(`${input.firstName} ${input.lastName} added as new employee`);
+                quit();
+            })
+        })
 }
 
 // Function to add new role
