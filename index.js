@@ -18,7 +18,7 @@ const db = mySQL.createConnection(
         password: 'password',
         database: 'employees_db'
     },
-    console.log(`Welcome to Employee Manager`)
+    // console.log(`Welcome to Employee Manager`)
 )
 
 // Query functions
@@ -82,12 +82,11 @@ function getEmps() {
     })  
 }
 
-// Figlet function
+// Figlet function for ASCII art titles
 function renderFiglet(title) {
-    console.log(figlet(title, {
-        font: 'doh',
-        horizontalLayout: 'default',
-        verticalLayout: 'default',
+    console.clear();
+    console.log(figlet.textSync(title, {
+        font: 'doom',
     }))
 }
 
@@ -95,8 +94,10 @@ function renderFiglet(title) {
 init();
 
 function init() {
+    renderFiglet(`Employee\nManager`);
+    
+    // Determine what the user wants to do within the Employee Manager
     inquirer
-        // Determine what the user wants to do within the Employee Manager
         .prompt(
             {
                 type: "list",
@@ -151,7 +152,7 @@ function quit() {
         .then((input) => {
             if (input.quitPrompt === true) {
                 console.clear();
-                console.log(`Thank you for using Employee Manager. Goodbye!`);
+                renderFiglet(`Goodbye!`);
                 process.exit();                
             } else {
                 console.clear();
@@ -163,7 +164,7 @@ function quit() {
 // Function to view table of employee data
 function viewEmps() {
     db.query('SELECT employees.id, first_name, last_name, roles.title, departments.dept_name, roles.salary, manager_id FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.dept_id = departments.id ORDER BY id', (err, data) => {
-        console.clear();
+        renderFiglet(`Employees:`);
         console.table(data);
         quit();
     })
@@ -172,7 +173,7 @@ function viewEmps() {
 // Function to view table of roles
 function viewRoles() {
     db.query('SELECT roles.id, title, salary, dept_id, departments.dept_name FROM roles JOIN departments ON roles.dept_id = departments.id ORDER BY id', (err, data) => {
-        console.clear();
+        renderFiglet(`Roles:`);
         console.table(data);
         quit();
     })
@@ -181,7 +182,7 @@ function viewRoles() {
 // Function to view table of departments
 function viewDepts() {
     db.query('SELECT * FROM departments ORDER BY id', (err, data) => {
-        console.clear();
+        renderFiglet(`Departments:`);
         console.table(data);
         quit();
     })
@@ -189,7 +190,7 @@ function viewDepts() {
 
 // Function to add new employee
 function addEmp() {
-    console.clear();
+    renderFiglet(`Add   New\nEmployee:`);
 
     // Call function to pull all roles and place in array
     getRoles();
@@ -239,7 +240,7 @@ function addEmp() {
 
 // Function to add new role
 function addRole() {
-    console.clear();
+    renderFiglet(`Add  New  Role:`);
 
     // Call function to pull all departments and place in array
     getDepts();
@@ -275,7 +276,7 @@ function addRole() {
 
 // Function to add new department
 function addDept() {
-    console.clear();
+    renderFiglet(`Add    New\nDepartment:`);
 
     inquirer
         .prompt(
@@ -296,7 +297,7 @@ function addDept() {
 
 // Function to update current employee info
 function updateEmp() {
-    console.clear();
+    renderFiglet(`Update\nEmployee:`);
 
     // Call functions to pull all employees & roles and place in arrays
     getEmps();
