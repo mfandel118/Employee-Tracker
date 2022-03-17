@@ -2,6 +2,7 @@
 const inquirer = require('inquirer');
 const mySQL = require('mysql2');
 require('console.table');
+const figlet = require('figlet');
 
 // Declare variables for empty arrays needed
 const roleArr = [];
@@ -79,6 +80,15 @@ function getEmps() {
             )
         }  
     })  
+}
+
+// Figlet function
+function renderFiglet(title) {
+    console.log(figlet(title, {
+        font: 'doh',
+        horizontalLayout: 'default',
+        verticalLayout: 'default',
+    }))
 }
 
 // Call init function to start when node is run
