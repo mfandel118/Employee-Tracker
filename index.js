@@ -53,6 +53,7 @@ function init() {
             } else if (input.initPrompt === "Add New Department") {
                 
             } else {
+                console.clear();
                 console.log(`Thank you for using Employee Manager. Goodbye!`);
                 process.exit();
             }
@@ -72,9 +73,11 @@ function quit() {
         )
         .then((input) => {
             if (input.quitPrompt === true) {
+                console.clear();
                 console.log(`Thank you for using Employee Manager. Goodbye!`);
                 process.exit();                
             } else {
+                console.clear();
                 init();
             }
         })
@@ -83,6 +86,7 @@ function quit() {
 // Function to view table of employee data
 function viewEmps() {
     db.query('SELECT * FROM employees', (err, data) => {
+        console.clear();
         console.table(data);
         quit();
     })
@@ -91,6 +95,7 @@ function viewEmps() {
 // Function to view table of roles
 function viewRoles() {
     db.query('SELECT * FROM roles', (err, data) => {
+        console.clear();
         console.table(data);
         quit();
     })
@@ -99,6 +104,7 @@ function viewRoles() {
 // Function to view table of departments
 function viewDepts() {
     db.query('SELECT * FROM departments', (err, data) => {
+        console.clear();
         console.table(data);
         quit();
     })
