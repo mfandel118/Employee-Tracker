@@ -47,7 +47,7 @@ function init() {
             } else if (input.initPrompt === "View All Roles") {
                 viewRoles();
             } else if (input.initPrompt === "Add New Role") {
-                
+                addRole();
             } else if (input.initPrompt === "View All Departments") {
                 viewDepts();
             } else if (input.initPrompt === "Add New Department") {
@@ -85,7 +85,7 @@ function quit() {
 
 // Function to view table of employee data
 function viewEmps() {
-    db.query('SELECT employees.id, first_name, last_name, roles.title, departments.dept_name, roles.salary, manager_id FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.dept_id = departments.id ORDER BY id;', (err, data) => {
+    db.query('SELECT employees.id, first_name, last_name, roles.title, departments.dept_name, roles.salary, manager_id FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.dept_id = departments.id ORDER BY id', (err, data) => {
         console.clear();
         console.table(data);
         quit();
@@ -94,7 +94,7 @@ function viewEmps() {
 
 // Function to view table of roles
 function viewRoles() {
-    db.query('SELECT roles.id, title, salary, dept_id, departments.dept_name FROM roles JOIN departments ON roles.dept_id = departments.id', (err, data) => {
+    db.query('SELECT roles.id, title, salary, dept_id, departments.dept_name FROM roles JOIN departments ON roles.dept_id = departments.id ORDER BY id', (err, data) => {
         console.clear();
         console.table(data);
         quit();
@@ -110,6 +110,34 @@ function viewDepts() {
     })
 }
 
+// Function to add new role
+function addRole() {
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What is the name of the new Role?",
+                name: "newRole"
+            },
+            {
+                type: "input",
+                message: (input) => `What is the salary for ${input.newRole}?`,
+                name: "salary"
+            },
+            {
+                type: "input",
+                message: (input) => `What is the department id for ${input.newRole}?`,
+                name: "dept_id"
+            },
+        ])
+        .then((input) => {
+            db.query('INSERT INTO roles (title, salary, dept_id) VALUES (?, ?, ?)', [input.newRole, input.salary, input.dept_id], (err, data) => {
+                console.log(`${input.newRole} added as new role`);
+                quit();
+            })
+        })
+}
+
 // Function to add new department
 function addDept() {
     inquirer
@@ -121,7 +149,7 @@ function addDept() {
             }
         )
         .then((input) => {
-            db.query('INSERT INTO departments (dept_name) VALUES (?);', input.newDept, (err, data) => {
+            db.query('INSERT INTO departments (dept_name) VALUES (?)', input.newDept, (err, data) => {
                 console.log(`${input.newDept} added as new department`);
                 quit();
             })
