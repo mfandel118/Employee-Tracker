@@ -51,7 +51,7 @@ function init() {
             } else if (input.initPrompt === "View All Departments") {
                 viewDepts();
             } else if (input.initPrompt === "Add New Department") {
-                
+                addDept();
             } else {
                 console.clear();
                 console.log(`Thank you for using Employee Manager. Goodbye!`);
@@ -108,4 +108,22 @@ function viewDepts() {
         console.table(data);
         quit();
     })
+}
+
+// Function to add new department
+function addDept() {
+    inquirer
+        .prompt(
+            {
+                type: "input",
+                message: "What is the name of the new Department?",
+                name: "newDept"
+            }
+        )
+        .then((input) => {
+            db.query('INSERT INTO departments (dept_name) VALUES (?);', input.newDept, (err, data) => {
+                console.log(`${input.newDept} added as new department`);
+                quit();
+            })
+        })
 }
