@@ -85,7 +85,7 @@ function quit() {
 
 // Function to view table of employee data
 function viewEmps() {
-    db.query('SELECT emp_id, first_name, last_name, roles.title, departments.dept_name, roles.salary, manager_id FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.dept_id = departments.id ORDER BY emp_id;', (err, data) => {
+    db.query('SELECT employees.id, first_name, last_name, roles.title, departments.dept_name, roles.salary, manager_id FROM employees JOIN roles ON employees.role_id = roles.id JOIN departments ON roles.dept_id = departments.id ORDER BY id;', (err, data) => {
         console.clear();
         console.table(data);
         quit();
@@ -94,7 +94,7 @@ function viewEmps() {
 
 // Function to view table of roles
 function viewRoles() {
-    db.query('SELECT * FROM roles', (err, data) => {
+    db.query('SELECT roles.id, title, salary, dept_id, departments.dept_name FROM roles JOIN departments ON roles.dept_id = departments.id', (err, data) => {
         console.clear();
         console.table(data);
         quit();
