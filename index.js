@@ -29,11 +29,12 @@ function init() {
                 choices: [
                     "View All Current Employees", 
                     "Add New Employee", 
-                    "Update Current Employee Info", 
-                    "View All Current Roles", 
+                    "Update Info for a Current Employee", 
+                    "View All Roles", 
                     "Add New Role", 
-                    "View All Current Departments",
-                    "Add New Department",],
+                    "View All Departments",
+                    "Add New Department",
+                    "Exit"],
             }
         )
         .then((input) => {
@@ -41,18 +42,14 @@ function init() {
                 viewEmps();
             } else if (input.initPrompt === "Add New Employee") {
                 
-            } else if (input.initPrompt === "Update Current Employee Info") {
+            } else if (input.initPrompt === "Update Info for a Current Employee") {
                 
-            } else if (input.initPrompt === "View All Current Roles") {
-                db.query('SELECT * FROM roles', function (err, data) {
-                    console.table(data);
-                  });
+            } else if (input.initPrompt === "View All Roles") {
+                viewRoles();
             } else if (input.initPrompt === "Add New Role") {
                 
-            } else if (input.initPrompt === "View All Current Departments") {
-                db.query('SELECT * FROM departments', function (err, data) {
-                    console.table(data);
-                  });
+            } else if (input.initPrompt === "View All Departments") {
+                viewDepts();
             } else if (input.initPrompt === "Add New Department") {
                 
             } else {
@@ -83,10 +80,26 @@ function quit() {
         })
 }
 
-// Function to view employee data
+// Function to view table of employee data
 function viewEmps() {
     db.query('SELECT * FROM employees', (err, data) => {
         console.table(data);
         quit();
-      })
+    })
+}
+
+// Function to view table of roles
+function viewRoles() {
+    db.query('SELECT * FROM roles', (err, data) => {
+        console.table(data);
+        quit();
+    })
+}
+
+// Function to view table of departments
+function viewDepts() {
+    db.query('SELECT * FROM departments', (err, data) => {
+        console.table(data);
+        quit();
+    })
 }
