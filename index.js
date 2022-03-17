@@ -112,21 +112,52 @@ function viewDepts() {
 
 // Function to add new employee
 function addEmp() {
+    let roleArr = [];
+    let mgrArr = [];
+
+    // Query to pull all roles and place in array
+    db.query('SELECT * FROM roles', (err, data) => {
+        // console.log(data);
+        for (let role of data) {
+            roleArr.push(
+                {
+                    name: role.title,
+                    value: role.id
+                }
+            )
+        }   
+    })
+
+    // Query to pull all managers and place in array
+    db.query('SELECT * FROM employees', (err, data) => {
+        for (let emp of data) {
+            if (emp.role_id === 1) {
+                mgrArr.push(
+                    {
+                        name: `${emp.first_name} ${emp.last_name}`,
+                        value: emp.id
+                    }
+                )
+            }
+        }   
+    })
+
     inquirer
         .prompt([
             {
                 type: "input",
-                message: "What is the first name of the new employee?",
+                message: "What is the new employee's first name?",
                 name: "firstName"
             },
             {
                 type: "input",
-                message: "What is the last name of the new employee?",
+                message: (input) => `What is ${input.firstName}'s last name?`,
                 name: "lastName"
             },
             {
-                type: "input",
-                message: (input) => `What is the role_id for ${input.firstName} ${input.lastName}?`,
+                type: "list",
+                message: (input) => `What is ${input.firstName} ${input.lastName}'s role?`,
+                choices: roleArr,
                 name: "roleId"
             },
             {
@@ -135,15 +166,17 @@ function addEmp() {
                 name: "mgrConfirm"
             },
             {
-                type: "input",
-                message: (input) => `What is the manager id for ${input.firstName} ${input.lastName}?`,
+                type: "list",
+                message: (input) => `Who is ${input.firstName} ${input.lastName}'s Manager?`,
                 when: (input) => input.mgrConfirm === true,
+                choices: mgrArr,
                 name: "mgrId"
             },
         ])
         .then((input) => {
             db.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [input.firstName, input.lastName, input.roleId, input.mgrId], (err, data) => {
-                console.log(`${input.firstName} ${input.lastName} added as new employee`);
+                console.clear();
+                console.log(`${input.firstName} ${input.lastName} added as new employee!`);
                 quit();
             })
         })
