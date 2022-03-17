@@ -179,6 +179,8 @@ function viewDepts() {
 
 // Function to add new employee
 function addEmp() {
+    console.clear();
+
     // Call function to pull all roles and place in array
     getRoles();
 
@@ -227,6 +229,8 @@ function addEmp() {
 
 // Function to add new role
 function addRole() {
+    console.clear();
+
     // Call function to pull all departments and place in array
     getDepts();
 
@@ -261,6 +265,8 @@ function addRole() {
 
 // Function to add new department
 function addDept() {
+    console.clear();
+
     inquirer
         .prompt(
             {
@@ -280,12 +286,22 @@ function addDept() {
 
 // Function to update current employee info
 function updateEmp() {
-    // Call function to pull all employees and place in array
+    console.clear();
+
+    // Call functions to pull all employees & roles and place in arrays
     getEmps();
+    getRoles();
+    getMgrs();
 
     // Prompts to determine who/what is being updated
     inquirer
         .prompt([
+            {
+                type: "list",
+                message: (input) => `What would you like to do?`,
+                choices: ["Update role of employee", "Assign new Manager for employee"],
+                name: "newInfo"
+            },
             {
                 type: "list",
                 message: "Which employee would you like to update?",
@@ -294,27 +310,21 @@ function updateEmp() {
             },
             {
                 type: "list",
-                message: (input) => `What information would you like to update about ${input.empChoice}?`,
-                choices: ["Update role", "Assign new manager"],
-                name: "newInfo"
-            },
-            {
-                type: "list",
-                message: (input) => `What is ${input.empChoice}'s new role?`,
+                message: (input) => `What is their new role?`,
                 choices: roleArr,
-                when: (input) => input.newInfo === "Update role",
+                when: (input) => input.newInfo === "Update role of employee",
                 name: "newRole"
             },
             {
                 type: "list",
-                message: (input) => `Who is ${input.empChoice}'s new manager?`,
+                message: (input) => `Who is their new Manager?`,
                 choices: mgrArr,
-                when: (input) => input.newInfo === "Assign new manager",
+                when: (input) => input.newInfo === "Assign new Manager for employee",
                 name: "newMgr"
             },
         ])
         .then((input) => {
-            // console.log(input.empChoice)
+
         }) 
    
 }
