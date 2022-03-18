@@ -137,7 +137,7 @@ function quit() {
         .prompt(
             {
                 type: "confirm",
-                message: "Would you like to exit the Employee Manager?",
+                message: "Would you like to exit the Employee Records Database?",
                 default: false,
                 name: "quitPrompt"
             }
@@ -429,7 +429,8 @@ function deleteRecord() {
         .then((input) => {
             if (input.delEmpConfirm === true) {
                 db.query('DELETE FROM employees WHERE id = ?', input.delEmp, (err, data) => {
-                    renderFiglet(`Employee\nDeleted!`);
+                    console.clear();
+                    console.log(`Employee deleted!`);
                     quit();
                 })
             } else if (input.delEmpConfirm === false) {
@@ -437,7 +438,8 @@ function deleteRecord() {
                 quit();
             } else if (input.delRoleConfirm === true) {
                 db.query('DELETE FROM roles WHERE id = ?', input.delRole, (err, data) => {
-                    renderFiglet(`Role  Deleted!`);
+                    console.clear();
+                    console.log(`Role deleted!`);
                     quit();
                 })
             } else if (input.delRoleConfirm === false) {
@@ -445,7 +447,8 @@ function deleteRecord() {
                 quit();
             } else if (input.delDeptConfirm === true) {
                 db.query('DELETE FROM departments WHERE id = ?', input.delDept, (err, data) => {
-                    renderFiglet(`Department\nDeleted!`);
+                    console.clear();
+                    console.log(`Department deleted!`);
                     quit();
                 })
             } else {
