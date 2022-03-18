@@ -6,6 +6,7 @@
 - [Usage](#usage)
 - [Installation](#installation)
 - [Link to GitHub Repo](#link-to-github-repo)
+- [Link to Video Walkthrough](#link-to-video-walkthrough)
 - [Screenshots](#screenshots)
 - [Questions](#questions)
 
@@ -46,6 +47,8 @@ to run the CMS. Make sure to change the password in index.js to your own mySQL p
 https://github.com/mfandel118/Employee-Tracker
 
 ## Link to Video Walkthrough
+
+https://drive.google.com/file/d/1L4fOl1zj7KXAY9RZZhPZ8JUgfQKr2pQF/view
 
 ## Screenshot(s)
 
