@@ -28,7 +28,7 @@ First, clone down the repository to your local machine, and navigate to the clon
 SOURCE db/schema.sql
 ```
 
-OR copy the code from schema.sql into your mySQL Workbench and execute. You should then modify the seeds.sql file to populate the tables with information specific to your company. Once the seeds.sql file has been updated. Repeat the same steps you took for executing the schema.sql file. Next, run
+OR copy the code from schema.sql into your mySQL Workbench and execute. You should then modify the seeds.sql file to populate the tables with information specific to your company. Once the seeds.sql file has been updated, repeat the same steps you took for executing the schema.sql file. Next, run
 
 ```
 npm i
