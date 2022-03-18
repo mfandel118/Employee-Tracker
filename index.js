@@ -6,8 +6,8 @@ const figlet = require('figlet');
 
 // Declare variables for empty arrays needed
 const roleArr = [];
-const mgrArr = [];
 const deptArr = [];
+const mgrArr = [];
 const empArr = [];
 
 // Connect to database
@@ -90,11 +90,8 @@ function renderFiglet(title) {
     }))
 }
 
-// Call init function to start when node is run
-init();
-
 function init() {
-    renderFiglet(`Employee\nManager`);
+    renderFiglet(`Employee\nRecords`);
     
     // Determine what the user wants to do within the Employee Manager
     inquirer
@@ -105,12 +102,11 @@ function init() {
                 name: "initPrompt",
                 choices: [
                     "View All Current Employees", 
-                    "Add New Employee", 
                     "Update Info for a Current Employee", 
                     "View All Roles", 
-                    "Add New Role", 
                     "View All Departments",
-                    "Add New Department",
+                    "Add New Record",
+                    "Delete an Existing Record",
                     "Exit"
                 ],
             }
@@ -118,21 +114,18 @@ function init() {
         .then((input) => {
             if (input.initPrompt === "View All Current Employees") {
                 viewEmps();
-            } else if (input.initPrompt === "Add New Employee") {
-                addEmp();
             } else if (input.initPrompt === "Update Info for a Current Employee") {
                 updateEmp();
             } else if (input.initPrompt === "View All Roles") {
                 viewRoles();
-            } else if (input.initPrompt === "Add New Role") {
-                addRole();
             } else if (input.initPrompt === "View All Departments") {
                 viewDepts();
-            } else if (input.initPrompt === "Add New Department") {
-                addDept();
+            } else if (input.initPrompt === "Add New Record") {
+                addRecord();
+            } else if (input.initPrompt === "Delete an Existing Record") {
+                deleteRecord();
             } else {
-                console.clear();
-                console.log(`Thank you for using Employee Manager. Goodbye!`);
+                renderFiglet(`Goodbye!`);
                 process.exit();
             }
         })
@@ -151,7 +144,6 @@ function quit() {
         )
         .then((input) => {
             if (input.quitPrompt === true) {
-                console.clear();
                 renderFiglet(`Goodbye!`);
                 process.exit();                
             } else {
@@ -186,6 +178,30 @@ function viewDepts() {
         console.table(data);
         quit();
     })
+}
+
+// Function to determine what type of record is being added
+function addRecord() {
+    renderFiglet(`Add  New\nRecord:`);
+
+    inquirer
+        .prompt(
+            {
+                type: "list",
+                message: "What type of record would you like to add to the database?",
+                choices: ['Add New Employee', 'Add New Role', 'Add New Department'],
+                name: "newRecord"
+            }
+        )
+        .then((input) => {
+            if (input.newRecord === 'Add New Employee') {
+                addEmp();
+            } else if (input.newRecord === 'Add New Role') {
+                addRole();
+            } else {
+                addDept();
+            }
+        })
 }
 
 // Function to add new employee
@@ -352,3 +368,92 @@ function updateEmp() {
         }) 
    
 }
+
+// Function to delete a role, dept, or employee
+function deleteRecord() {
+    renderFiglet(`Delete  a\nRecord:`);
+    getEmps();
+    getRoles();
+    getDepts();
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                message: "What type of record would you like to delete from the database?",
+                choices: ['Delete an Employee', 'Delete a Role', 'Delete a Department'],
+                name: "delRecord"
+            },
+            {
+                type: "list",
+                message: "Which employee would you like to delete?",
+                choices: empArr,
+                when: (input) => input.delRecord === 'Delete an Employee',
+                name: "delEmp"
+            },
+            {
+                type: "confirm",
+                message: "Are you sure you want to permanently delete this employee from the database?",
+                default: false,
+                when: (input) => input.delRecord === 'Delete an Employee',
+                name: "delEmpConfirm"
+            },
+            {
+                type: "list",
+                message: "Which role would you like to delete?",
+                choices: roleArr,
+                when: (input) => input.delRecord === 'Delete a Role',
+                name: "delRole"
+            },
+            {
+                type: "confirm",
+                message: "Are you sure you want to permanently delete this role (and all employees with this role) from the database?",
+                default: false,
+                when: (input) => input.delRecord === 'Delete a Role',
+                name: "delRoleConfirm"
+            },
+            {
+                type: "list",
+                message: "Which department would you like to delete?",
+                choices: deptArr,
+                when: (input) => input.delRecord === 'Delete a Department',
+                name: "delDept"
+            },
+            {
+                type: "confirm",
+                message: "Are you sure you want to permanently delete this department (and all roles & employees in this department) from the database?",
+                default: false,
+                when: (input) => input.delRecord === 'Delete a Department',
+                name: "delDeptConfirm"
+            },
+        ])
+        .then((input) => {
+            if (input.delEmpConfirm === true) {
+                db.query('DELETE FROM employees WHERE id = ?', input.delEmp, (err, data) => {
+                    renderFiglet(`Employee\nDeleted!`);
+                    quit();
+                })
+            } else if (input.delEmpConfirm === false) {
+                console.log(`No Records Deleted.`);
+                quit();
+            } else if (input.delRoleConfirm === true) {
+                db.query('DELETE FROM roles WHERE id = ?', input.delRole, (err, data) => {
+                    renderFiglet(`Role  Deleted!`);
+                    quit();
+                })
+            } else if (input.delRoleConfirm === false) {
+                console.log(`No Records Deleted.`);
+                quit();
+            } else if (input.delDeptConfirm === true) {
+                db.query('DELETE FROM departments WHERE id = ?', input.delDept, (err, data) => {
+                    renderFiglet(`Department\nDeleted!`);
+                    quit();
+                })
+            } else {
+                console.log(`No Records Deleted.`);
+                quit();
+            }
+        })
+}
+
+// Call init function to start application when node is run
+init();
